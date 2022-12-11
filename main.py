@@ -159,8 +159,25 @@ def cheminpluscourt(graph,villedepart,villearrivee)
   
   
   return chemin,cout
+'''
+
+# TODO : pseudo code
+
+## Version avec évlautation sur le noeud courant
+# sur le noeud N, on évalue le cout d'arrivée, si le cout est inférieur au cout connu, on enregistre d'ou on vient, et le nouveau cout
+
+# Version avec évaluation des voisins
+# sur le noeud N, on évlue le cout d'arrivée
+# on réference tous les voisins, si le cout d'arrivée jusqu'au voisin est inférieur au cout connu, on l'enregirtre, le nouveau prédécedesceseur etant le noeud courant, le cout etant le cout au neoud courant plus le cout du lien
 
 '''
+besoins :
+liste des voisins
+cout du lien noeud courant - voisin
+cout au noeud courant
+dictionnaire des couts min par noeud et des antécédents correspondants
+'''
+
 
 def cheminlepluscourt(graph, villedepart, villearrivee):
   chemin = nx.shortest_path(graph, source=villedepart, target=villearrivee, weight='duree')
@@ -213,10 +230,24 @@ if __name__ == '__main__':
   # print("le graphe Ga est connexe : ", estconnexe(Ga))
   
   # print(cheminlepluscourt(G, 'Nantes', 'Bordeaux'))
-  # print(cheminlepluscourt(G, 'Lille', 'Marseille'))
+  print(cheminlepluscourt(G, 'Lille', 'Marseille'))
 
-  for node in sorted(Ga.neighbors('Lille') ):
-    print(node)
+  
+  listecouts:Dict={}
+  listecouts['Lille']=['0','Lille']
+  listecouts['Dunkerke']=['57','Lille']
+  print(listecouts['Dunkerke'][0])
+  
+  
+  
+  
+  depart='Lille'
+  for node in sorted(Ga.neighbors(depart) ):
+    print("liaison : ",depart,'-',node,", cout associé :",G.edges[depart,node]['duree'])
+    print(type(G.edges[depart,node]['duree']))
+    listecouts[node]=[G.edges[depart,node]['duree'],depart]
+    listecouts['Lille'][1]='Bethune'
+  print(listecouts)
   
   # affichage(G, image)
   # affichage(Ga, image)
