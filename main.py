@@ -1,8 +1,8 @@
-import re
+
 from typing import Dict, Any
 
 import numpy as np
-import pandas as pd
+# import pandas as pd
 import matplotlib.pyplot as plt
 import networkx as nx
 import cv2
@@ -31,8 +31,8 @@ def construitgraphe(myarray, routes):
   # print("nombre d'éléments:", nombreelements)
   
   graph: Graph = nx.Graph()
-  colors : Dict={'a': 'red', 'd': 'green'}
-  if routes == 'a' :
+  colors: Dict = {'a': 'red', 'd': 'green'}
+  if routes == 'a':
     for i in range(nombreelements):
       if myarray[i][2] == 'a':
         graph.add_edge(myarray[i][0], myarray[i][1], type=myarray[i][2], duree=float(myarray[i][3]),
@@ -85,8 +85,11 @@ def construitpos(myarray):
 
 
 def affichage(graph, bck_img):
+  
   plt.figure(str(graph))
   plt.rcParams["figure.figsize"] = (60, 15)
+  plt.axis("off")
+  plt.tight_layout()
   
   # on commence par afficher l'image de fond
   plt.imshow(bck_img)
@@ -97,30 +100,61 @@ def affichage(graph, bck_img):
   nx.draw_networkx_nodes(graph, pos=posv)
   # on dessine les labels des noeuds:
   nx.draw_networkx_labels(graph, pos=posv)
-  colors=[]
+  colors = []
   for edge in graph.edges:
     colors.append(graph.edges[edge]['color'])
   # colors = [graph.edges[edge]['color'] for edge in graph.nodes]
   nx.draw_networkx_edges(graph, pos=posv, width=2, edge_color=colors)
-
-  
-  
-  
-  # modification de la position entre deux affichages :
-  
   # nx.draw_networkx_labels(graph, pos=newpos, labels=labels, verticalalignment='center')
-  
+
   # nx.draw_networkx_edge_labels(g, pos=pos)
-  
+
   # preparation de l'affichage secondaire ordonné:
   # ax = plt.subplots()
   # ax.margins(0.08)
-  plt.axis("off")
 
+
+def estconnexe(graph):
+  if nx.is_connected(graph):
+    return True
+  else:
+    return False
+
+def peutatteindre(graph,villedepart,villearrivee,dejavisite):
+  if villearrivee in graph.neighbors(villedepart):
+    return True
+  else:
+    # print("reste : ", (set(graph.neighbors(villedepart))) - set(dejavisite))
+    for node in graph.neighbors(villedepart):
+      if node not in dejavisite:
+        dejavisite.append(node)
+        # print(str(node), "visité ! ")
+        if peutatteindre(graph,node,villearrivee,dejavisite):
+          return True
+    return False
   
-  # plt.tight_layout()
+  
+def estconnexe(graph,villedepart):
+  connexe=True
+  for node in graph.nodes:
+    if node != villedepart:
+      if peutatteindre(graph,villedepart,node,[node]):
+        connexe=connexe&True
+      else:
+        return False
+  return connexe
 
+      
+  
+  
+  
 
+def cheminlepluscourt(graph, villedepart, villearrivee):
+  chemin = nx.shortest_path(graph, source=villedepart, target=villearrivee, weight='duree')
+  
+  return chemin
+  
+  
 
 ################ main ##################
 if __name__ == '__main__':
@@ -153,15 +187,24 @@ if __name__ == '__main__':
   Ga = construitgraphe(chopped_graph_data, 'a')
   Gd = construitgraphe(chopped_graph_data, 'd')
   
-  
   # print("liste des noeuds de G : ", dict(G.nodes.items()))
   # print("liste des routes du graph G : ", dict(G.edges.items()))
-
-  affichage(G, image)
-  affichage(Ga, image)
+  
+  print("parcours de Lille à Marseille par toutes les routes : ",peutatteindre(G,'Lille','Marseille',['Lille']))
+  print("parcours de Brest à Paris par les d : ", peutatteindre(Gd, 'Brest', 'Paris',['Brest']))
+  print("verification de la connectivité de G: ", estconnexe(G,'Lille'))
+  print("verification de la connectivité de Gd: ", estconnexe(Ga,'Lyon'))
+  
+  
+  # print("le graphe G est connexe : ", estconnexe(G))
+  # print("le graphe Gd est connexe : ", estconnexe(Gd))
+  # print("le graphe Ga est connexe : ", estconnexe(Ga))
+  
+  # print(cheminlepluscourt(G, 'Nantes', 'Bordeaux'))
+  # print(cheminlepluscourt(G, 'Lille', 'Marseille'))
+  
+  # affichage(G, image)
+  # affichage(Ga, image)
   affichage(Gd, image)
-
-  for edge in G.edges:
-    print(G.edges[edge]['color'])
-    
+  
   plt.show()
