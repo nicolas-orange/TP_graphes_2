@@ -144,10 +144,23 @@ def estconnexe(graph,villedepart):
         return False
   return connexe
 
-      
+
+'''
+def cheminpluscourt(graph,villedepart,villearrivee)
+  chemin = {}
+  cout = 0
+  dictcouts={villedepart:0}
+  def disjkstra(graph,villedepart,dictcout):
+    for node in sorted(graph.neighbors(villedepart), :
+      if node not in dictcout :
+        if dictcout{villedepart[0]} > graph.edges[villedepart,node]['weight']+dictcout
+          dictcout.append(node:{graph.edges[villedepart,node]['weight']+dictcout(villedepart),villedepart}
+        
   
   
-  
+  return chemin,cout
+
+'''
 
 def cheminlepluscourt(graph, villedepart, villearrivee):
   chemin = nx.shortest_path(graph, source=villedepart, target=villearrivee, weight='duree')
@@ -190,11 +203,10 @@ if __name__ == '__main__':
   # print("liste des noeuds de G : ", dict(G.nodes.items()))
   # print("liste des routes du graph G : ", dict(G.edges.items()))
   
-  print("parcours de Lille à Marseille par toutes les routes : ",peutatteindre(G,'Lille','Marseille',['Lille']))
-  print("parcours de Brest à Paris par les d : ", peutatteindre(Gd, 'Brest', 'Paris',['Brest']))
-  print("verification de la connectivité de G: ", estconnexe(G,'Lille'))
-  print("verification de la connectivité de Gd: ", estconnexe(Ga,'Lyon'))
-  
+  # print("parcours de Lille à Marseille par toutes les routes : ",peutatteindre(G,'Lille','Marseille',['Lille']))
+  #  print("parcours de Brest à Paris par les d : ", peutatteindre(Gd, 'Brest', 'Paris',['Brest']))
+  # print("verification de la connectivité de G: ", estconnexe(G,'Lille'))
+  # print("verification de la connectivité de Gd: ", estconnexe(Ga,'Lyon'))
   
   # print("le graphe G est connexe : ", estconnexe(G))
   # print("le graphe Gd est connexe : ", estconnexe(Gd))
@@ -202,9 +214,12 @@ if __name__ == '__main__':
   
   # print(cheminlepluscourt(G, 'Nantes', 'Bordeaux'))
   # print(cheminlepluscourt(G, 'Lille', 'Marseille'))
+
+  for node in sorted(Ga.neighbors('Lille') ):
+    print(node)
   
   # affichage(G, image)
   # affichage(Ga, image)
   affichage(Gd, image)
   
-  plt.show()
+  # plt.show()
