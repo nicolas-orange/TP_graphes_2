@@ -1,4 +1,3 @@
-
 from typing import Dict, Any
 
 import numpy as np
@@ -17,7 +16,7 @@ def toarray(fichier):
 def chop_header(myarray, a_un_entete):
   newarray = np.stack(myarray)  # recopie du array myarray
   if a_un_entete:
-    print("suppression du premier element du tableau  : ", myarray[0])
+    # print("suppression du premier element du tableau  : ", myarray[0])
     newarray = myarray[1:]  # recopie de myarray sans la premiere ligne
   
   else:
@@ -85,7 +84,6 @@ def construitpos(myarray):
 
 
 def affichage(graph, bck_img):
-  
   plt.figure(str(graph))
   plt.rcParams["figure.figsize"] = (60, 15)
   plt.axis("off")
@@ -106,9 +104,9 @@ def affichage(graph, bck_img):
   # colors = [graph.edges[edge]['color'] for edge in graph.nodes]
   nx.draw_networkx_edges(graph, pos=posv, width=2, edge_color=colors)
   # nx.draw_networkx_labels(graph, pos=newpos, labels=labels, verticalalignment='center')
-
+  
   # nx.draw_networkx_edge_labels(g, pos=pos)
-
+  
   # preparation de l'affichage secondaire ordonné:
   # ax = plt.subplots()
   # ax.margins(0.08)
@@ -120,7 +118,8 @@ def estconnexe(graph):
   else:
     return False
 
-def peutatteindre(graph,villedepart,villearrivee,dejavisite):
+
+def peutatteindre(graph, villedepart, villearrivee, dejavisite):
   if villearrivee in graph.neighbors(villedepart):
     return True
   else:
@@ -129,17 +128,17 @@ def peutatteindre(graph,villedepart,villearrivee,dejavisite):
       if node not in dejavisite:
         dejavisite.append(node)
         # print(str(node), "visité ! ")
-        if peutatteindre(graph,node,villearrivee,dejavisite):
+        if peutatteindre(graph, node, villearrivee, dejavisite):
           return True
     return False
-  
-  
-def estconnexe(graph,villedepart):
-  connexe=True
+
+
+def estconnexe(graph, villedepart):
+  connexe = True
   for node in graph.nodes:
     if node != villedepart:
-      if peutatteindre(graph,villedepart,node,[node]):
-        connexe=connexe&True
+      if peutatteindre(graph, villedepart, node, [node]):
+        connexe = connexe & True
       else:
         return False
   return connexe
@@ -180,11 +179,15 @@ dictionnaire des couts min par noeud et des antécédents correspondants
 
 
 def cheminlepluscourt(graph, villedepart, villearrivee):
-  chemin = nx.shortest_path(graph, source=villedepart, target=villearrivee, weight='duree')
-  
-  return chemin
-  
-  
+  cheminpluscourt = nx.shortest_path(graph, source=villedepart, target=villearrivee, weight='duree')
+  distance = nx.shortest_path_length(graph,source=villedepart, target=villearrivee, weight='duree')
+  return cheminpluscourt,distance
+
+
+def cheminlemoinscher(graph, villedepart, villearrivee):
+  cheminmoinscher = nx.shortest_path(graph, source=villedepart, target=villearrivee, weight='cout')
+  cout = nx.shortest_path_length(graph, source=villedepart, target=villearrivee, weight='cout')
+  return cheminmoinscher,cout
 
 ################ main ##################
 if __name__ == '__main__':
@@ -230,27 +233,28 @@ if __name__ == '__main__':
   # print("le graphe Ga est connexe : ", estconnexe(Ga))
   
   # print(cheminlepluscourt(G, 'Nantes', 'Bordeaux'))
-  print(cheminlepluscourt(G, 'Lille', 'Marseille'))
+  # print(cheminlepluscourt(G, 'Lille', 'Marseille' ))
+  
+  listedurees: Dict = {}
+  listecouts: Dict = {}
+  # print(listecouts['Dunkerke'][0])
+  
+  ### Exploration des outils permettant la construction d'une table des couts par route
+  
+  depart = 'Lille'
+  for node in sorted(G.nodes):
+    # print("liaison : ",depart,'-',node,", cout associé :",G.edges[depart,node]['duree'])
+    # print(type(G.edges[depart,node]['duree']))
+    listedurees[node] = cheminlepluscourt(G,'Lille',node)
+    listecouts[node] = cheminlemoinscher(G,'Lille',node)
+  
+  # print("liste des durées de trajet depuis Lille : ",listedurees)
 
+  # print("liste des couts de trajet depuis Lille : ", listecouts)
   
-  listecouts:Dict={}
-  listecouts['Lille']=['0','Lille']
-  listecouts['Dunkerke']=['57','Lille']
-  print(listecouts['Dunkerke'][0])
-  
-  
-  
-  
-  depart='Lille'
-  for node in sorted(Ga.neighbors(depart) ):
-    print("liaison : ",depart,'-',node,", cout associé :",G.edges[depart,node]['duree'])
-    print(type(G.edges[depart,node]['duree']))
-    listecouts[node]=[G.edges[depart,node]['duree'],depart]
-    listecouts['Lille'][1]='Bethune'
-  print(listecouts)
-  
-  # affichage(G, image)
-  # affichage(Ga, image)
+  print ("calcul du cout du trajet Lille Marseille : ",  )
+  affichage(G, image)
+  affichage(Ga, image)
   affichage(Gd, image)
   
   # plt.show()
