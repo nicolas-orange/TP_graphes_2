@@ -179,15 +179,20 @@ dictionnaire des couts min par noeud et des antécédents correspondants
 
 
 def cheminlepluscourt(graph, villedepart, villearrivee):
-  cheminpluscourt = nx.shortest_path(graph, source=villedepart, target=villearrivee, weight='duree')
-  distance = nx.shortest_path_length(graph,source=villedepart, target=villearrivee, weight='duree')
-  return cheminpluscourt,distance
-
+  try:
+    cheminpluscourt = nx.shortest_path(graph, source=villedepart, target=villearrivee, weight='duree')
+    distance = nx.shortest_path_length(graph,source=villedepart, target=villearrivee, weight='duree')
+    return cheminpluscourt,distance
+  except nx.NetworkXNoPath:
+    return "pas de route !"
 
 def cheminlemoinscher(graph, villedepart, villearrivee):
-  cheminmoinscher = nx.shortest_path(graph, source=villedepart, target=villearrivee, weight='cout')
-  cout = nx.shortest_path_length(graph, source=villedepart, target=villearrivee, weight='cout')
-  return cheminmoinscher,cout
+  try:
+    cheminmoinscher = nx.shortest_path(graph, source=villedepart, target=villearrivee, weight='cout')
+    cout = nx.shortest_path_length(graph, source=villedepart, target=villearrivee, weight='cout')
+    return cheminmoinscher,cout
+  except nx.NetworkXNoPath:
+    return "pas de route !"
 
 ################ main ##################
 if __name__ == '__main__':
@@ -252,9 +257,19 @@ if __name__ == '__main__':
 
   # print("liste des couts de trajet depuis Lille : ", listecouts)
   
-  print ("calcul du cout du trajet Lille Marseille : ",  )
+  # print("affichage des routes en base : ",G.edges(data=True))
+  # print("calcul du trajet Lille Marseille : ", nx.dijkstra_path(G, 'Lille', 'Marseille', 'duree'))
+  # print("calcul du nombre de sauts du trajet Lille Marseille : ",nx.dijkstra_path_length(G, 'Lille', 'Marseille', 'duree'))
+  depart='Lille'
+  arrivee='Marseille'
+  print("chemin le plus court toute route : (km)", cheminlepluscourt(G,depart,arrivee))
+  print("chemin le moins cher toute route : (km)", cheminlemoinscher(G,depart,arrivee))
+  print("chemin le plus court sans autoroute (km)", cheminlepluscourt(Gd,depart,arrivee))
+  print("chemin le moins cher par autoroute (km)", cheminlemoinscher(Ga, depart, arrivee))
+
+
   affichage(G, image)
   affichage(Ga, image)
   affichage(Gd, image)
   
-  # plt.show()
+  #plt.show()
